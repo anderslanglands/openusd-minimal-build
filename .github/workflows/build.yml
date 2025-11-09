@@ -38,7 +38,7 @@ jobs:
           mkdir OpenSubdiv/build
           cd OpenSubdiv/build
           cmake -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/$DIST_FOLDER/ .. \
-            -DENABLE_SHARED=OFF   \
+            -DBUILD_SHARED_LIBS=OFF \
             -DNO_EXAMPLES=1       \
             -DNO_TUTORIALS=1      \
             -DNO_REGRESSION=1     \
@@ -77,7 +77,7 @@ jobs:
             -DPXR_BUILD_USD_TOOLS=OFF \
             -DPXR_BUILD_IMAGING=OFF \
             -DPXR_BUILD_USD_IMAGING=OFF \
-            -DPXR_BUILD_SHARED_LIBS=OFF \
+            -DBUILD_SHARED_LIBS=OFF \
             -DPXR_BUILD_MONOLITHIC=ON \
             -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/$DIST_FOLDER
           cmake --build . --config Release --target install
