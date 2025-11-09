@@ -53,7 +53,7 @@ jobs:
 
       - name: Clone OpenUSD
         run: |
-          git clone --branch v$OPENUSD_VERSION https://github.com/PixarAnimationStudios/OpenUSD.git
+          git clone --branch $OPENUSD_VERSION https://github.com/PixarAnimationStudios/OpenUSD.git
 
       - name: Build OpenUSD
         run: |
@@ -61,8 +61,14 @@ jobs:
           cd OpenUSD/build
           cmake .. \
             -DCMAKE_PREFIX_PATH=$GITHUB_WORKSPACE/deps \
-            -DPXR_ENABLE_PYTHON=OFF \
-            -DPXR_ENABLE_IMAGING=OFF \
+            -DPXR_ENABLE_PYTHON_SUPPORT=OFF \
+            -DPXR_ENABLE_IMAGING_SUPPORT=OFF \
+            -DPXR_ENABLE_GL_SUPPORT=OFF \
+            -DPXR_ENABLE_VULKAN_SUPPORT=OFF \
+            -DPXR_ENABLE_METAL_SUPPORT=OFF \
+            -DPXR_ENABLE_MATERIALX_SUPPORT=OFF \
+            -DPXR_ENABLE_OSL_SUPPORT=OFF \
+            -DPXR_BUILD_DOCUMENTATION=OFF \
             -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/dist
           cmake --build . --config Release --target install
 
