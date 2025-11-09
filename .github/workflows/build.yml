@@ -70,6 +70,11 @@ jobs:
             -DPXR_ENABLE_OSL_SUPPORT=OFF \
             -DPXR_BUILD_DOCUMENTATION=OFF \
             -DPXR_BUILD_TESTS=OFF \
+            -DPXR_BUILD_TUTORIALS=OFF \
+            -DPXR_BUILD_EXAMPLES=OFF \
+            -DPXR_BUILD_USD_TOOLS=OFF \
+            -DPXR_BUILD_IMAGING=OFF \
+            -DPXR_BUILD_USD_IMAGING=OFF \
             -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/dist
           cmake --build . --config Release --target install
 
