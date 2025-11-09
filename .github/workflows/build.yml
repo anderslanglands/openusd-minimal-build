@@ -1,0 +1,68 @@
+name: Build and Release OpenUSD with OpenSubdiv and oneTBB
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      OPENSUBDIV_VERSION: v3_7_0
+      OPENUSD_VERSION: v25.11
+      TBB_VERSION: 2021.12.0
+
+    steps:
+      - name: Checkout this repo
+        uses: actions/checkout@v3
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake build-essential wget git
+
+      - name: Download oneTBB binaries
+        run: |
+          wget https://github.com/oneapi-src/oneTBB/releases/download/v${TBB_VERSION}/oneapi-tbb-${TBB_VERSION}-lin.tgz
+          tar xzf oneapi-tbb-${TBB_VERSION}-lin.tgz
+          mkdir -p $GITHUB_WORKSPACE/deps/
+          mv oneapi-tbb-${TBB_VERSION}/include $GITHUB_WORKSPACE/deps/
+          mv oneapi-tbb-${TBB_VERSION}/lib $GITHUB_WORKSPACE/deps/
+
+      - name: Clone OpenSubdiv
+        run: |
+          git clone --branch ${OPENSUBDIV_VERSION} https://github.com/PixarAnimationStudios/OpenSubdiv.git
+          mkdir OpenSubdiv/build
+          cd OpenSubdiv/build
+          cmake -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/deps/ ..
+          cmake --build . --config Release --target install
+
+      - name: Clone OpenUSD
+        run: |
+          git clone --branch v$OPENUSD_VERSION https://github.com/PixarAnimationStudios/OpenUSD.git
+
+      - name: Build OpenUSD
+        run: |
+          mkdir OpenUSD/build
+          cd OpenUSD/build
+          cmake .. \
+            -DCMAKE_PREFIX_PATH=$GITHUB_WORKSPACE/deps \
+            -DPXR_ENABLE_PYTHON=OFF \
+            -DPXR_ENABLE_IMAGING=OFF \
+            -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/dist
+          cmake --build . --config Release --target install
+
+      - name: Archive built binaries
+        run: |
+          cd $GITHUB_WORKSPACE/dist
+          tar czf ../openusd_build_${{ github.ref_name }}.tar.gz *
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: openusd_build_${{ github.ref_name }}.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
