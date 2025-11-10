@@ -94,7 +94,9 @@ jobs:
       - name: Archive built binaries
         run: |
           cd $GITHUB_WORKSPACE/build
+          ls $DIST_FOLDER
           tar czf openusd-minimal-${{ github.ref_name }}.tar.gz $DIST_FOLDER
+          ls openusd-minimal-${{ github.ref_name }}.tar.gz
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
