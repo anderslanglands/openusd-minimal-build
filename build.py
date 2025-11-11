@@ -59,3 +59,7 @@ os.system(f"cmake -B OpenUSD/build -S OpenUSD -G Ninja \
     -DCMAKE_INSTALL_PREFIX={GITHUB_WORKSPACE}/{DIST_FOLDER}"
 )
 os.system("cmake --build OpenUSD/build --target install")
+
+# patch usd_ms so it can be bundled with tbb
+USD_LIB = "libusd_ms.so"
+os.system(f"patchelf --set-rpath '$ORIGIN' {GITHUB_WORKSPACE}/{DIST_FOLDER}/lib/{USD_LIB}")
