@@ -9,6 +9,10 @@ OPENUSD_VERSION = "v25.08"
 TBB_VERSION = "2021.12.0"
 DIST_FOLDER = "openusd-minimal-25.11"
 
+DEBUG=False
+if "--debug" in sys.argv:
+    DEBUG=True
+
 os.makedirs(f"{GITHUB_WORKSPACE}/{DIST_FOLDER}")
 os.chdir(GITHUB_WORKSPACE)
 os.system(f"wget https://github.com/oneapi-src/oneTBB/releases/download/v{TBB_VERSION}/oneapi-tbb-{TBB_VERSION}-lin.tgz")
@@ -56,6 +60,7 @@ os.system(f"cmake -B OpenUSD/build -S OpenUSD -G Ninja \
     -DPXR_BUILD_IMAGING=OFF \
     -DPXR_BUILD_USD_IMAGING=OFF \
     -DPXR_BUILD_MONOLITHIC=ON \
+    -DCMAKE_BUILD_TYPE={'Debug' if DEBUG else 'Release'} \
     -DCMAKE_INSTALL_PREFIX={GITHUB_WORKSPACE}/{DIST_FOLDER}"
 )
 os.system("cmake --build OpenUSD/build --target install")
