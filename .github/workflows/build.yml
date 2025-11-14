@@ -84,3 +84,82 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
 
+
+  build-release-monolithic:
+    runs-on: ubuntu-22.04
+
+    env:
+      OPENSUBDIV_VERSION: v3_7_0
+      OPENUSD_VERSION: v25.11
+      TBB_VERSION: 2021.12.0
+      DIST_FOLDER: openusd-minimal-25.11
+
+    steps:
+      - name: Checkout this repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'  # Specify your desired version
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake build-essential wget git patchelf
+
+      - name: Build
+        run: |
+          python build.py --monolithic
+
+      - name: Archive built binaries
+        run: |
+          cd $GITHUB_WORKSPACE/build
+          tar czf ../openusd-minimal-mono-release-${{ github.ref_name }}.tar.gz $DIST_FOLDER
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: openusd-minimal-release-${{ github.ref_name }}.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+
+  build-debug-monolithic:
+    runs-on: ubuntu-22.04
+
+    env:
+      OPENSUBDIV_VERSION: v3_7_0
+      OPENUSD_VERSION: v25.11
+      TBB_VERSION: 2021.12.0
+      DIST_FOLDER: openusd-minimal-25.11
+
+    steps:
+      - name: Checkout this repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'  # Specify your desired version
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake build-essential wget git patchelf
+
+      - name: Build
+        run: |
+          python build.py --debug --monolithic
+
+      - name: Archive built binaries
+        run: |
+          cd $GITHUB_WORKSPACE/build
+          tar czf ../openusd-minimal-mono-debug-${{ github.ref_name }}.tar.gz $DIST_FOLDER
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: openusd-minimal-debug-${{ github.ref_name }}.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+
