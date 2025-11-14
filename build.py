@@ -5,7 +5,7 @@ import shutil
 
 GITHUB_WORKSPACE = f"{os.path.abspath(os.curdir)}/build"
 OPENSUBDIV_VERSION = "v3_7_0"
-OPENUSD_VERSION = "v25.08"
+OPENUSD_VERSION = sys.argv[1]
 TBB_VERSION = "2021.12.0"
 DIST_FOLDER = "openusd-minimal-25.11"
 
