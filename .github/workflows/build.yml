@@ -33,7 +33,7 @@ jobs:
         run: |
           python build.py
           cd $GITHUB_WORKSPACE/build
-          tar czf ../openusd-minimal-release-${{ github.ref_name }}.tar.gz $DIST_FOLDER
+          tar czf ../openusd-minimal-separate-release-${{ github.ref_name }}.tar.gz $DIST_FOLDER
           cd ..
           rm -rf $GITHUB_WORKSPACE/build
 
@@ -49,7 +49,7 @@ jobs:
         run: |
           python build.py --debug
           cd $GITHUB_WORKSPACE/build
-          tar czf ../openusd-minimal-debug-${{ github.ref_name }}.tar.gz $DIST_FOLDER
+          tar czf ../openusd-minimal-separate-debug-${{ github.ref_name }}.tar.gz $DIST_FOLDER
           cd ..
           rm -rf $GITHUB_WORKSPACE/build
 
