@@ -6,16 +6,14 @@ on:
       - 'v*'
 
 jobs:
-  build-release:
+  build:
     runs-on: ubuntu-22.04
-
-    strategy:
-      matrix:
-        OPENUSD_VERSION: [v25.11, v25.08]
 
     env:
       OPENSUBDIV_VERSION: v3_7_0
+      OPENUSD_VERSION: v25.11
       TBB_VERSION: 2021.12.0
+      DIST_FOLDER: openusd-minimal-25.11
 
     steps:
       - name: Checkout this repo
@@ -24,63 +22,26 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: '3.10'  # Specify your desired version
 
       - name: Install Dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y cmake build-essential wget git patchelf
 
-      - name: Set dist folder
-        run: echo "DIST_FOLDER=openusd-minimal-${{ matrix.OPENUSD_VERSION }}" >> $GITHUB_ENV
-
-      - name: Build Release
+      - name: Build
         run: |
-          python build.py ${{ matrix.OPENUSD_VERSION }}
-          cd $GITHUB_WORKSPACE/build
-          tar czf ../openusd-minimal-separate-release-${{ matrix.OPENUSD_VERSION }}.tar.gz $DIST_FOLDER
-          cd ..
-          rm -rf $GITHUB_WORKSPACE/build
-        env:
-          OPENUSD_VERSION: ${{ matrix.OPENUSD_VERSION }}
+          python build.py
 
-      - name: Build Release Monolithic
+      - name: Archive built binaries
         run: |
-          python build.py ${{ matrix.OPENUSD_VERSION }} --monolithic
           cd $GITHUB_WORKSPACE/build
-          tar czf ../openusd-minimal-monolithic-release-${{ matrix.OPENUSD_VERSION }}.tar.gz $DIST_FOLDER
-          cd ..
-          rm -rf $GITHUB_WORKSPACE/build
-        env:
-          OPENUSD_VERSION: ${{ matrix.OPENUSD_VERSION }}
-
-      - name: Build Debug
-        run: |
-          python build.py ${{ matrix.OPENUSD_VERSION }} --debug
-          cd $GITHUB_WORKSPACE/build
-          tar czf ../openusd-minimal-separate-debug-${{ matrix.OPENUSD_VERSION }}.tar.gz $DIST_FOLDER
-          cd ..
-          rm -rf $GITHUB_WORKSPACE/build
-        env:
-          OPENUSD_VERSION: ${{ matrix.OPENUSD_VERSION }}
-
-      - name: Build Debug Monolithic
-        run: |
-          python build.py ${{ matrix.OPENUSD_VERSION }} --debug --monolithic
-          cd $GITHUB_WORKSPACE/build
-          tar czf ../openusd-minimal-monolithic-debug-${{ matrix.OPENUSD_VERSION }}.tar.gz $DIST_FOLDER
-          cd ..
-          rm -rf $GITHUB_WORKSPACE/build
-        env:
-          OPENUSD_VERSION: ${{ matrix.OPENUSD_VERSION }}
+          tar czf ../openusd-minimal-${{ github.ref_name }}.tar.gz $DIST_FOLDER
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          files: |
-            openusd-minimal-separate-release-${{ matrix.OPENUSD_VERSION }}.tar.gz
-            openusd-minimal-separate-debug-${{ matrix.OPENUSD_VERSION }}.tar.gz
-            openusd-minimal-monolithic-release-${{ matrix.OPENUSD_VERSION }}.tar.gz
-            openusd-minimal-monolithic-debug-${{ matrix.OPENUSD_VERSION }}.tar.gz
+          files: openusd-minimal-${{ github.ref_name }}.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.PAT }}
+

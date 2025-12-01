@@ -5,17 +5,9 @@ import shutil
 
 GITHUB_WORKSPACE = f"{os.path.abspath(os.curdir)}/build"
 OPENSUBDIV_VERSION = "v3_7_0"
-OPENUSD_VERSION = sys.argv[1]
+OPENUSD_VERSION = "v25.11"
 TBB_VERSION = "2021.12.0"
 DIST_FOLDER = "openusd-minimal-25.11"
-
-DEBUG=False
-MONOLITHIC=False
-if "--debug" in sys.argv:
-    DEBUG=True
-
-if "--monolithic" in sys.argv:
-    MONOLITHIC=True
 
 os.makedirs(f"{GITHUB_WORKSPACE}/{DIST_FOLDER}")
 os.chdir(GITHUB_WORKSPACE)
@@ -48,6 +40,7 @@ os.system("cmake --build OpenSubdiv/build --target install")
 os.system(f"git clone --branch {OPENUSD_VERSION} https://github.com/PixarAnimationStudios/OpenUSD.git")
 os.system(f"cmake -B OpenUSD/build -S OpenUSD -G Ninja \
     -DCMAKE_PREFIX_PATH={GITHUB_WORKSPACE}/{DIST_FOLDER} \
+    -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
     -DBUILD_SHARED_LIBS=ON \
     -DPXR_ENABLE_PYTHON_SUPPORT=OFF \
     -DPXR_ENABLE_GL_SUPPORT=OFF \
@@ -62,8 +55,7 @@ os.system(f"cmake -B OpenUSD/build -S OpenUSD -G Ninja \
     -DPXR_BUILD_USD_TOOLS=OFF \
     -DPXR_BUILD_IMAGING=OFF \
     -DPXR_BUILD_USD_IMAGING=OFF \
-    -DPXR_BUILD_MONOLITHIC={'ON' if MONOLITHIC else 'OFF'} \
-    -DCMAKE_BUILD_TYPE={'Debug' if DEBUG else 'Release'} \
+    -DPXR_BUILD_MONOLITHIC=ON \
     -DCMAKE_INSTALL_PREFIX={GITHUB_WORKSPACE}/{DIST_FOLDER}"
 )
 os.system("cmake --build OpenUSD/build --target install")
