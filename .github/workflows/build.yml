@@ -11,7 +11,7 @@ jobs:
 
     strategy:
       matrix:
-        OPENUSD_VERSION: [v25.08, v24.11]
+        OPENUSD_VERSION: [v25.11, v25.08]
 
     env:
       OPENSUBDIV_VERSION: v3_7_0
